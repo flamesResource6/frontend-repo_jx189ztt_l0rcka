@@ -1,31 +1,36 @@
 import { useState } from 'react'
-import { Mail, Phone, Linkedin, Github, Send } from 'lucide-react'
+import { Mail, Phone, Linkedin, Github, Send, CheckCircle2, Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function Contact() {
   const [status, setStatus] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.currentTarget)
     const data = Object.fromEntries(form.entries())
 
     try {
       // Placeholder: send via email service or backend
-      console.log('Contact form submitted', data)
+      await new Promise((r) => setTimeout(r, 900))
       setStatus('Thanks! I’ll get back to you shortly.')
       e.currentTarget.reset()
     } catch (err) {
       setStatus('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <section className="py-20 bg-slate-50 dark:bg-slate-950">
+    <section className="py-20 bg-slate-50 dark:bg-slate-950 overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Let’s build something great</h2>
-            <p className="mt-3 text-slate-600 dark:text-slate-300">Tell me a bit about your project and I’ll follow up to schedule a call.</p>
+            <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Let’s build something great</motion.h2>
+            <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }} className="mt-3 text-slate-600 dark:text-slate-300">Tell me a bit about your project and I’ll follow up to schedule a call.</motion.p>
 
             <div className="mt-8 space-y-3 text-slate-700 dark:text-slate-200">
               <a href="mailto:you@example.com" className="flex items-center gap-3"><Mail size={18}/> you@example.com</a>
@@ -37,7 +42,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+          <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Name</label>
@@ -52,11 +57,15 @@ export default function Contact() {
                 <textarea name="message" rows="5" required className="mt-1 w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 outline-none focus:ring-2 ring-blue-500" />
               </div>
             </div>
-            {status && <p className="mt-4 text-sm text-green-600">{status}</p>}
-            <button type="submit" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-6 py-3 font-semibold shadow-lg shadow-blue-600/20">
-              Send <Send size={16} />
+            {status && (
+              <p className="mt-4 text-sm inline-flex items-center gap-2 text-green-700 dark:text-green-400">
+                <CheckCircle2 size={16} /> {status}
+              </p>
+            )}
+            <button type="submit" disabled={loading} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-6 py-3 font-semibold shadow-lg shadow-blue-600/20 disabled:opacity-60">
+              {loading ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />} {loading ? 'Sending...' : 'Send'}
             </button>
-          </form>
+          </motion.form>
         </div>
       </div>
     </section>
